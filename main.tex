@@ -14,7 +14,7 @@
 % Nastavení informací pro úvodní stránku / Setting information for the title page
 %---------------------------------------------------------------------------
 \projectinfo{
-  date=\today, % Datum - je vhodné vepsat datum obhajoby (natvrdo), ne datum kompilace slajdů / Date - it is advisable to write the date of the defense (hard), not the date of the slide compilation        
+  date={22. 06. 2026}, % Datum - je vhodné vepsat datum obhajoby (natvrdo), ne datum kompilace slajdů / Date - it is advisable to write the date of the defense (hard), not the date of the slide compilation        
   title={Analýza politik pro řízení přístupu}, % Název prezentace / Presentation title (The whole title of the presented work suitably divided into lines that are optically balanced)
   title.footer={Analýza politik pro řízení přístupu}, % Název prezentace - text zobrazovaný vedle čísla slajdu / Presentation title - displayed next to the slide number (The full title of the presented work, it may be suitably abbreviated to fit the footer)
   author.name={Jan},  % Jméno autora / Author name
@@ -30,7 +30,13 @@
 %---------------------------------------------------------------------------
 
 \begin{document}
-    \frame[plain]{\titlepage} % Úvodní stránka / Title page
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[at=(current page.center)] {
+      \includegraphics[width=\paperwidth,height=\paperheight]{img/title.pdf}
+    };
+  \end{tikzpicture}
+\end{frame}
     \ifczech
         \input{slides_cz}  % Slajdy v češtině / Slides in Czech
     \else

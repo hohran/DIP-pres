@@ -30,10 +30,40 @@
 \usepackage[utf8]{inputenc} %kodovani / encoding
 \usepackage{newcent}
 \usepackage{hyperref}
-\usepackage[most]{tcolorbox}
 \usepackage{fancyvrb}
 \usepackage{appendixnumberbeamer}
 \usepackage{tikz}
+\usepackage{xspace}
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.1,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinelanguage{Rego}{
+  morekeywords={package,import,default,not,else,if,contains,every,in,true,false,null,some},
+  sensitive=true,
+  morecomment=[l]{\#},
+  morestring=[b]"
+}
+\lstdefinelanguage{SMT}{
+  morekeywords={assert,ite,and,or,declare-datatype,declare,datatypes,datatype,store,as,const,Int,String,Boolean,true,false,Array,Seq,Set,fun,str,len},
+  sensitive=true,
+  morecomment=[l]{\;},
+  morestring=[b]"
+}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries\color{codepurple},
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{codegreen},
+  frame=single,
+  breaklines=true,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  xleftmargin=2em,
+  keepspaces=true,                 
+}
 
 % Volba loga dle zvoleneho jazyka / Logo selection according to the chosen language
 \ifenglish
@@ -95,6 +125,9 @@
 \def\@author{\@author@tf\ \@author@n\ \@author@s}
 \def\@supervisor{\@supervisor@tf\ \@supervisor@n\ \@supervisor@s\ifthenelse{\equal{\@supervisor@tl}{}}{}{,~\@supervisor@tl}}
 
+
+\newcommand{\true}{\textbf{true}\xspace}
+\newcommand{\false}{\textbf{false}\xspace}
 %-----------------------------------------------------------------------------
 % Titulní stránka / Title page
 %-----------------------------------------------------------------------------

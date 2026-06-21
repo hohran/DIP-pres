@@ -101,124 +101,6 @@
     \end{tikzpicture}
 \end{frame}
 
-% Pripomenme si funkcionalitu Open Policy Agentu:
-% Pro pozadavek a interni data sluzby v JSON formatu na zaklade politiky specifikovane v Rego jazyce vraci opet JSON dokument s prislusnou odpovedi
-% Pri uspesnem prevodu vstupnich komponent do SMT ale muzeme zodpovidat nasledujici otazky
-\begin{frame}
-    \frametitle{Motivace}
-    \centering
-    \begin{tikzpicture}[
-            s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
-            e/.style={fill=gray!50},
-            code/.style={draw,fill=blue!10,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
-            xsh/.style={xshift=15mm},
-            transform shape, scale=0.9
-        ]
-
-        \tikzset{
-            node distance=20mm,
-        }
-
-        \node[code] (input) {\texttt{\{ user: "admin" \}}};
-        \node[s,right of=input,xshift=15mm] (policy) {\textit{Policy (Rego)}};
-        \node[s,right of=policy,xshift=20mm] (data) {\textit{Data (JSON)}};
-        \node[s,below of=policy] (OPA) {\textbf{Open Policy Agent}};
-        \node[code,fill=orange!20,below of=OPA] (output) {\texttt{\{ "allow": true \}}};
-
-        \draw[->,thick]
-        (input) edge (OPA)
-        (policy) edge (OPA)
-        (data) edge (OPA)
-        (OPA) edge (output)
-        ;
-
-    \end{tikzpicture}
-\end{frame}
-
-
-% Jaka je mnozina povolenych dokumentu danou politikou?
-% Jelikoz se interpretace bude nachazet v SMT, muzeme vstup specifikovat symbolicky, napriklad, ze ocekavame polozku user jako String.
-% Zpracovani VeriRegem a nasledne SMT solverem nam pote nevrati jednu odpoved, ale model vsech moznych odpovedi
-% Zaroven, jestli je symbolicky vstup v dane politice neprijatelny, muzeme z SMT solveru ziskat patricny protipriklad
-\begin{frame}
-    \frametitle{Motivace - Symbolická exekuce}
-    \begin{center}
-        \textit{"Jaká je množina povolených dokumentů?"}
-    \end{center}
-    \vspace{.5cm}
-    \centering
-    \begin{tikzpicture}[
-            s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
-            code/.style={draw,fill=blue!10,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
-            e/.style={fill=gray!50},
-            xsh/.style={xshift=15mm},
-            transform shape, scale=0.9
-        ]
-
-        \tikzset{
-            node distance=20mm,
-        }
-
-        \node[code] (input) {\texttt{\{ user: \textbf{String} \}}};
-        \node[s,right of=input,xshift=18mm] (policy) {\textit{Policy (Rego)}};
-        \node[s,right of=policy,xshift=18mm] (data) {\textit{Data (JSON)}};
-        \node[s,below of=policy] (OPA) {\textbf{VeriRego}};
-        \node[code,fill=orange!20,below of=OPA] (output) {\texttt{user $\in$ \{"admin","root"\} }};
-        % \node[s,below of=OPA] (output) {\textit{Output decision \textbf{(model)}}};
-
-        \draw[->,thick]
-        (input) edge (OPA)
-        (policy) edge (OPA)
-        (data) edge (OPA)
-        (OPA) edge (output)
-        ;
-
-    \end{tikzpicture}
-
-    \vspace{.5cm}
-    + vracení protipříkladů
-\end{frame}
-
-% Dalsim vyuzitim je pote porovnani politik mezi sebou
-% Muzeme se naprikklad ptat, zdali je novejsi politika striktnejsi, nez predchozi
-% Toho by se dalo v SMT dosahnout ziskanim formuli popisujicich obe politiky a otazkou, jestli pro vsechny mozne instance vstupu platnost v jedne politice implikuje platnost v druhe politice
-\begin{frame}
-    \frametitle{Motivace - Porovnání politik}
-    \begin{center}
-        \textit{"Je jedna politika striktnější než druhá?"}
-    \end{center}
-    \vspace{.5cm}
-    \centering
-    \begin{tikzpicture}[
-            s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
-            code/.style={draw,fill=blue!10,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
-            e/.style={fill=gray!50},
-            xsh/.style={xshift=15mm},
-            transform shape, scale=0.9
-        ]
-
-        \tikzset{
-            node distance=20mm,
-        }
-
-        \node[code] (input) {\texttt{\{ user: \textbf{String} \}}};
-        \node[s,right of=input,xshift=14mm] (policy1) {\textit{Policy 1}};
-        \node[s,right of=policy1,xshift=2mm] (policy) {\textit{Policy 2}};
-        \node[s,right of=policy,xshift=8mm] (data) {\textit{Data (JSON)}};
-        \node[s,below of=policy1,minimum width=40mm,xshift=5mm] (OPA) {\textbf{VeriRego}};
-        \node[code,fill=orange!20,below of=OPA] (output) {\texttt{Policy 1 $\subseteq$ Policy 2}};
-
-        \draw[->,thick]
-        (input) edge (OPA)
-        (policy1) edge (OPA)
-        (policy) edge (OPA)
-        (data) edge (OPA)
-        (OPA) edge (output)
-        ;
-
-    \end{tikzpicture}
-\end{frame}
-
 % Mozna se ptate, jestli podobne nastroje jiz existuji
 % Nejvyznacnejsi jsou od Amazon Web Services, a to zaprve Cedar Analysis, kde Cedar je de facto omezenou odnosi Rego jazyka vyhradne navrzenou pro formalni verifikaci
 % Dalsi ukazkou je Zelkova - analyzator IAM policies, ktery posuzuje, jestli je dana sluzba zcela verejna
@@ -261,36 +143,27 @@
 % Asi hlavni obtizi je expresivita jazyka, ktera umoznuje velke mnozstvi ruznych konstrukci, ktere, ac jsou snadno pochopitelne, mechanicky jsou narocne na zpracovani
 % Roli hraje take dynamicke typovani jazyka, ktere muze byt v rozepri se staticky typovanym SMTLIBem, ktery podporuje vetsina solveru
 % Co se tyce rozhodnutelnosti a efektivnosti pak hraji velkou roli kvantifikatory, ktere jsou v Rego jazyku valne pouzivane
-\begin{frame}
+\begin{frame}[fragile]
     \frametitle{Problematika}
     \begin{itemize}
-        \item Expresivita Rego jazyka
-        \item Dynamické typování
-        \item Kvantifikátory
+      \item \emph{Expresivita} Rego jazyka
+      \item \emph{Dynamické} typování
+      \item Kvantifikátory
     \end{itemize}
     \vspace{.5cm}
+\begin{lstlisting}[language=Rego]
+package example
 
-    \begin{tcolorbox}[enhanced jigsaw, % needed to really the frame off!
- colback=lightgray!50, % black background
- coltext=black, % white text
- % sharp corners, % no rounded corners
- colframe=black, % not really necessary
- boxrule=1pt % frame off 
- ]
-    \texttt{names := [name | name := sites[i].name]}
-    \vspace{.5cm}
+roles := graph.reachable(data.roles, input.user.role)
 
-    \texttt{allow \color{Purple}\textbf{if} \color{Black}\{}
-
-    \hspace{1cm} \texttt{\color{Purple}\textbf{some} \color{Black}i,\color{PineGreen}\textit{"foo"}\hspace{1pt} \color{Purple}\textbf{in} \color{Black}names}
-
-    \hspace{1cm} \texttt{server[i].status == \color{PineGreen}\textit{"public"}}
-
-    \texttt{\}}
-    \end{tcolorbox}
-    % \includegraphics[width=0.9\textwidth]{img/rego-ex1.png}
+allow if {
+  some role in roles
+  data.priority[role] > 3
+} else if {
+  input.user.name == "admin"
+}
+\end{lstlisting}
 \end{frame}
-
 
 %%%%%%%%                    04 - Výsledky práce                     %%%%%%%%
 %---------------------------------------------------------------------------
@@ -305,26 +178,71 @@
 % dale generovani odpovidajicich typu pro SMTLIB
 % Co se tyce samotneho prevodu, uz je vyvinut na podporu ..., a schemat dokumentu, tedy jejich symbolicke reprezentaci
 \begin{frame}
-    \frametitle{Současný stav práce}
+    \frametitle{Výsledky práce}
     \begin{itemize}
-        \item Typová inference
-        \item Generování odpovídajících typů v SMT-LIB
-        \item Převod: 
-            \begin{itemize}
-                \item kompatibilních vestavěných funkcí
-                \item neparametrických pravidel
-                \item datových struktur
-                \item schémat dokumentů
-            \end{itemize}
+        \item Převod fragmentu jazyka Rego do SMT
+        \item \emph{Návrh} a \emph{implementace} dvou analýz:
+          \begin{itemize}
+              \item Chyby za běhu
+              \item Mrtvý kód
+          \end{itemize}
     \end{itemize}
 \end{frame}
 
 % Jeste nas ceka prevod parametrickych pravidel a overeni rozhodnutelnosti fragmentu rego jazyka pro ruzne analyzi, coz bude doprovazeno i znacnym testovanim
+\begin{frame}[fragile]
+    \frametitle{Analýza - Chyby za běhu}
+    Zápis rozdílných hodnot do stejné proměnné
+
+    \vspace{.5cm}
+    \begin{lstlisting}[language=Rego]
+...
+
+allow := true if {
+  user.balance > input.cost
+}
+
+allow := false if {
+  user.name in banned_users
+}
+\end{lstlisting}
+    \vspace{.5cm}
+
+  \textit{Analýza vrací konkrétní příklad vstupu}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Analýza - Mrtvý kód}
+    Podmínky, které nikdy neovlivní hodnotu proměnné
+
+    \vspace{.5cm}
+    \begin{lstlisting}[language=Rego, escapechar=|]
+...
+
+x if {
+  y > 2
+} else if {
+  y < 4
+} else if {
+  |\textbf{\color{red}y == 3}|
+}
+\end{lstlisting}
+  \hspace{5mm}
+  \small\textit{Podmínka \textbf{if \{ y == 3 \}} je redundantní.}
+    \vspace{.5cm}
+\end{frame}
+
 \begin{frame}
-    \frametitle{Budoucí práce}
+    \frametitle{Vyhodnocení}
     \begin{itemize}
-        \item Parametrická pravidla
-        \item Rozhodnutelnost fragmentů pro různé analýzy
+        \item Experimentalní vyhodnocení na ručně sestavených příkladech
+        \item Kombinace:
+          \begin{itemize}
+              \item Aritmetických funkcí
+              \item Základních řetězcových operací
+              \item Strukturovaných objektů
+              \item Polí
+          \end{itemize}
     \end{itemize}
 \end{frame}
 
@@ -341,67 +259,39 @@
 %---------------------------------------------------------------------------
 
 % Mockrat vam dekuji za udeleny cas a vasi pozornost, a prenechavam prostor pro diskuzi
-\begin{frame}
+\begin{frame}[fragile]
     \frametitle{Děkuji za pozornost!}
     \centering
-        \begin{tikzpicture}[
-                s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
-                code/.style={draw,fill=blue!10,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
-                e/.style={fill=gray!50},
-                xsh/.style={xshift=15mm},
-                transform shape, scale=0.7
-            ]
+    \begin{tikzpicture}[
+        s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
+        code/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
+        transform shape, scale=0.8
+    ]
+    \tikzset{
+        node distance=15mm,
+    }
+        \node[code] (in) { \texttt{allow \color{Purple}\textbf{if} \color{Black}input.user == \color{PineGreen}\textit{"admin"}} };
+        \node[s,below of=in] (verirego) { \textbf{VeriRego}};
+        \node[code,below of=verirego] (out) { \texttt{(assert (= "admin" (select input "user")))}};
 
-            \tikzset{
-                node distance=20mm,
-            }
-
-            \node[code] (input) {\texttt{\{ user: \textbf{String} \}}};
-            \node[s,right of=input,xshift=14mm] (policy1) {\textit{Policy 1}};
-            \node[s,right of=policy1,xshift=2mm] (policy) {\textit{Policy 2}};
-            \node[s,right of=policy,xshift=8mm] (data) {\textit{Data (JSON)}};
-            \node[s,below of=policy1,minimum width=40mm,xshift=5mm] (OPA) {\textbf{VeriRego}};
-            \node[code,fill=orange!20,below of=OPA] (output) {\texttt{Policy 1 $\subseteq$ Policy 2}};
-
-            \draw[->,thick]
-            (input) edge (OPA)
-            (policy1) edge (OPA)
-            (policy) edge (OPA)
-            (data) edge (OPA)
-            (OPA) edge (output)
-            ;
-
-        \end{tikzpicture}
+        \draw[->]
+            (in) edge (verirego)
+            (verirego) edge (out);
+    \end{tikzpicture}
 
         \vspace{.5cm}
 
-        \begin{tikzpicture}[
-                s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
-                code/.style={draw,fill=blue!10,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
-                e/.style={fill=gray!50},
-                xsh/.style={xshift=15mm},
-                transform shape, scale=0.7
-            ]
+    \begin{lstlisting}[language=Rego, escapechar=|, basicstyle=\ttfamily\small]
+...
 
-            \tikzset{
-                node distance=20mm,
-            }
-
-            \node[code] (input) {\texttt{\{ user: \textbf{String} \}}};
-            \node[s,right of=input,xshift=18mm] (policy) {\textit{Policy (Rego)}};
-            \node[s,right of=policy,xshift=18mm] (data) {\textit{Data (JSON)}};
-            \node[s,below of=policy] (OPA) {\textbf{VeriRego}};
-            \node[code,fill=orange!20,below of=OPA] (output) {\texttt{user $\in$ \{"admin","root"\} }};
-            % \node[s,below of=OPA] (output) {\textit{Output decision \textbf{(model)}}};
-
-            \draw[->,thick]
-            (input) edge (OPA)
-            (policy) edge (OPA)
-            (data) edge (OPA)
-            (OPA) edge (output)
-            ;
-
-        \end{tikzpicture}
+x if {
+  y > 2
+} else if {
+  y < 4
+} else if {
+  |\textbf{\color{red}y == 3}|
+}
+\end{lstlisting}
 \end{frame}
 
 
@@ -425,14 +315,240 @@
 % Pokud k otázkám nebude potřeba žádná vizuální informace, je vhodné mít jednotlivé otázky jako odrážky na jediném slajdu.
 % Pokud je otázek více a jsou k nim obrázky či grafy, je vhodné mít pro každou otázku jeden slajd - nahoře znění otázky, pod ním vizuální materiál.
 
-% \appendix{}
-% \begin{frame}
-%   \frametitle{Otázky oponenta}
-%   \begin{itemize}
-%     \item Pokud je otázek více, lze udělat i~více slajdů.
-%     \item Tento slajd nechť je příloha, která se nepočítá do celkového počtu slajdů.
-%     \item Otázku je dobré sem přepsat \emph{verbatim}, ať není pochybnost, jestli nedošlo k nepřesnému parafrázování.
-%   \end{itemize}
-%   \bigskip
-%   \includegraphics[width=\textwidth]{img/template-ResultsPlot.pdf}
-% \end{frame}
+\appendix{}
+\begin{frame}
+  \frametitle{Otázky oponenta}
+  \begin{enumerate}
+    \item Můžete uvést, která část architektury či funkcionality nástroje VeriRego je Vaším dílem?
+      \item Jak to je s rozhodnutelností analýz pro Rego? Jsou rozhodnutelné nebo ne (a proč)? Pokud ne, máte fragment jazyka Rego, kde rozhodnutelnost lze garantovat?
+  \end{enumerate}
+  \bigskip
+\end{frame}
+
+\begin{frame}
+  \frametitle{Otázky oponenta}
+   \textit{  1. Můžete uvést, která část architektury či funkcionality nástroje VeriRego je Vaším dílem?}
+  \bigskip
+
+  \underline{Obě analýzy}, převod pravidel do SMT
+  \bigskip
+  \bigskip
+
+  \small Dále jsem se podílel na: návrhu datových typů, podpoře pro nedefinované hodnoty, typové inferenci, reprezentaci uživatelských funkcí, přístupu do strukturovaných datových typů, ...
+\end{frame}
+
+\begin{frame}
+  \frametitle{Otázky oponenta}
+  \textit{2. Jak to je s rozhodnutelností analýz pro Rego? Jsou rozhodnutelné nebo ne (a proč)? Pokud ne, máte fragment jazyka Rego, kde rozhodnutelnost lze garantovat?}
+  \bigskip
+
+  Rego je navrženo, aby bylo rozhodnutelné:
+  \begin{itemize}
+    \item Zákaz rekurze
+    \item Konečné vstupy
+  \end{itemize}
+  To ale neimplikuje obecnou rozhodnutelnost.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Otázky oponenta}
+  \textit{2. Jak to je s rozhodnutelností analýz pro Rego? Jsou rozhodnutelné nebo ne (a proč)? Pokud ne, máte fragment jazyka Rego, kde rozhodnutelnost lze garantovat?}
+  \bigskip
+
+  Fragment, na kterém byly analýzy vystavěny, je rozhodnutelný:
+  \begin{itemize}
+    \item Aritmetické funkce
+    \item Základní řetězcové operace
+    \item Strukturované objekty
+    \item Pole
+  \end{itemize}
+  \bigskip
+
+  \small\textit{Očekáváme, že se podporovaný fragment může lišit pro různé analýzy.}
+\end{frame}
+
+%% Priklady 
+
+\begin{frame}[fragile]
+  \frametitle{Příklady: Kolize}
+  \begin{lstlisting}[language=Rego, basicstyle=\ttfamily\small]
+package e01
+
+x := 1
+x := 2
+  \end{lstlisting}
+  \textit{collision on values \textbf{1} and \textbf{2}} \\
+  \texttt{input = \{ "count": 3, "word": "a" \}}
+
+  \noindent\rule{\linewidth}{0.4pt}
+  \begin{lstlisting}[language=Rego, basicstyle=\ttfamily\small]
+package e02
+
+x := 1 if input.count >= 1
+x := 2 if input.count <= 1
+  \end{lstlisting}
+  \textit{collision on values \textbf{1} and \textbf{2}} \\
+  \texttt{input = \{ "count": 1, "word": "a" \}}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Příklady: Kolize}
+\begin{lstlisting}[language=Rego, basicstyle=\ttfamily\small]
+package e03
+
+x := true if input.word == "Hello, World!"
+x := false if contains(input.word, "!")
+\end{lstlisting}
+\textit{collision on values \true and \false} \\
+\texttt{input = \{ "count": 2, "word": "Hello, World!" \}}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Příklady: Kolize}
+\begin{lstlisting}[language=Rego, basicstyle=\ttfamily\small]
+package e04
+
+y := 1
+x := z if z := y-1
+x := y if input.count > 1
+\end{lstlisting}
+\textit{collision on values \textbf{z} and \textbf{y}} \\
+\texttt{input = \{ "count": 2, "word": "c" \}}
+\noindent\rule{\linewidth}{0.4pt}
+
+\begin{lstlisting}[language=Rego]
+package e06
+
+x := 1 if input.count == 1
+x := 2 if input.count == 2
+x := input.count
+\end{lstlisting}
+\textit{no collisions}
+\end{frame}
+
+% Subsume
+
+\begin{frame}[fragile]
+  \frametitle{Příklady: Mrtvý kód}
+\begin{lstlisting}[language=Rego, escapechar=|]
+package e01
+
+x if input.count > 1
+|\textbf{\color{red}x if input.count > 10}|
+\end{lstlisting}
+
+\noindent\rule{\linewidth}{0.4pt}
+\begin{lstlisting}[language=Rego, escapechar=|]
+package e02
+
+x if {
+  input.count > 1
+} else if {
+  |\textbf{\color{red}input.count > 10}|
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Příklady: Mrtvý kód}
+\begin{lstlisting}[language=Rego, escapechar=|]
+package e03
+
+x if contains(input.word, "X")
+|\textbf{\color{red}x if contains(input.word, "XX")}|
+\end{lstlisting}
+
+\noindent\rule{\linewidth}{0.4pt}
+\begin{lstlisting}[language=Rego, escapechar=|]
+package e05
+
+arr := [0,0,1,1,0,1]
+x if arr[input.count] == 1
+|\textbf{\color{red}x if input.count == 3}|
+x if input.count == 4
+\end{lstlisting}
+\end{frame}
+
+% Jaka je mnozina povolenych dokumentu danou politikou?
+% Jelikoz se interpretace bude nachazet v SMT, muzeme vstup specifikovat symbolicky, napriklad, ze ocekavame polozku user jako String.
+% Zpracovani VeriRegem a nasledne SMT solverem nam pote nevrati jednu odpoved, ale model vsech moznych odpovedi
+% Zaroven, jestli je symbolicky vstup v dane politice neprijatelny, muzeme z SMT solveru ziskat patricny protipriklad
+\begin{frame}
+  \frametitle{Analýza - Symbolická exekuce (návrh)}
+    \begin{center}
+        \textit{"Jaká je množina povolených dokumentů?"}
+    \end{center}
+    \vspace{.5cm}
+    \centering
+    \begin{tikzpicture}[
+            s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
+            code/.style={draw,fill=blue!10,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
+            e/.style={fill=gray!50},
+            xsh/.style={xshift=15mm},
+            transform shape, scale=0.9
+        ]
+
+        \tikzset{
+            node distance=20mm,
+        }
+
+        \node[code] (input) {\texttt{\{ user: \textbf{String} \}}};
+        \node[s,right of=input,xshift=18mm] (policy) {\textit{Policy (Rego)}};
+        \node[s,right of=policy,xshift=18mm] (data) {\textit{Data (JSON)}};
+        \node[s,below of=policy] (OPA) {\textbf{VeriRego}};
+        \node[code,fill=orange!20,below of=OPA] (output) {\texttt{user $\in$ \{"admin","root"\} }};
+        % \node[s,below of=OPA] (output) {\textit{Output decision \textbf{(model)}}};
+
+        \draw[->,thick]
+        (input) edge (OPA)
+        (policy) edge (OPA)
+        (data) edge (OPA)
+        (OPA) edge (output)
+        ;
+
+    \end{tikzpicture}
+
+    \vspace{.5cm}
+    + vracení protipříkladů
+\end{frame}
+
+% Dalsim vyuzitim je pote porovnani politik mezi sebou
+% Muzeme se naprikklad ptat, zdali je novejsi politika striktnejsi, nez predchozi
+% Toho by se dalo v SMT dosahnout ziskanim formuli popisujicich obe politiky a otazkou, jestli pro vsechny mozne instance vstupu platnost v jedne politice implikuje platnost v druhe politice
+\begin{frame}
+    \frametitle{Analýza - Porovnání politik (návrh)}
+    \begin{center}
+        \textit{"Je jedna politika striktnější než druhá?"}
+    \end{center}
+    \vspace{.5cm}
+    \centering
+    \begin{tikzpicture}[
+            s/.style={draw,thick,rectangle,minimum height=10mm, minimum width=18mm},
+            code/.style={draw,fill=blue!10,rectangle,minimum height=10mm, minimum width=18mm,rounded corners=2mm},
+            e/.style={fill=gray!50},
+            xsh/.style={xshift=15mm},
+            transform shape, scale=0.9
+        ]
+
+        \tikzset{
+            node distance=20mm,
+        }
+
+        \node[code] (input) {\texttt{\{ user: \textbf{String} \}}};
+        \node[s,right of=input,xshift=14mm] (policy1) {\textit{Policy 1}};
+        \node[s,right of=policy1,xshift=2mm] (policy) {\textit{Policy 2}};
+        \node[s,right of=policy,xshift=8mm] (data) {\textit{Data (JSON)}};
+        \node[s,below of=policy1,minimum width=40mm,xshift=5mm] (OPA) {\textbf{VeriRego}};
+        \node[code,fill=orange!20,below of=OPA] (output) {\texttt{Policy 1 $\subseteq$ Policy 2}};
+
+        \draw[->,thick]
+        (input) edge (OPA)
+        (policy1) edge (OPA)
+        (policy) edge (OPA)
+        (data) edge (OPA)
+        (OPA) edge (output)
+        ;
+
+    \end{tikzpicture}
+\end{frame}
+
